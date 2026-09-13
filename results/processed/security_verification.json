@@ -1,0 +1,265 @@
+{
+  "metadata": {
+    "timestamp": 1785106214.6680355,
+    "keycloak_url": "http://localhost:18081",
+    "realm": "ephemeral-agents",
+    "api_url": "http://localhost:8001",
+    "expected_audience": "internal-api",
+    "short_ttl_sleep_seconds": 22
+  },
+  "scenarios": {
+    "S1": [
+      {
+        "mode": "A",
+        "attack": "stolen_bearer",
+        "expected_status": 200,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": "Task executed successfully",
+        "passed": true,
+        "notes": "bearer token re-used from an unrelated client (proves vulnerability)"
+      },
+      {
+        "mode": "B",
+        "attack": "stolen_bearer",
+        "expected_status": 200,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": "Task executed successfully",
+        "passed": true,
+        "notes": "audience-scoped bearer is still bearer; re-use succeeds"
+      },
+      {
+        "mode": "C",
+        "attack": "stolen_bearer",
+        "expected_status": 401,
+        "expected_error": "invalid_dpop",
+        "actual_status": 401,
+        "actual_error": "invalid_dpop",
+        "actual_message": "DPoP proof key does not match access token binding",
+        "passed": true,
+        "notes": "thief signs proof with a NEW keypair; jkt mismatch on cnf.jkt"
+      }
+    ],
+    "S2": [
+      {
+        "mode": "C",
+        "attack": "dpop_replay_first_request",
+        "expected_status": 200,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": null,
+        "passed": true,
+        "notes": "first presentation of jti \u2014 must succeed to set up the replay"
+      },
+      {
+        "mode": "C",
+        "attack": "dpop_replay_second_request",
+        "expected_status": 403,
+        "expected_error": "replay_attack",
+        "actual_status": 403,
+        "actual_error": "replay_attack",
+        "actual_message": "Replay attack detected: JTI '5cf1b99f-ed18-4316-b4a4-04e1494a4862' has been used before",
+        "passed": true,
+        "notes": "same jti re-presented \u2014 must be rejected by replay cache"
+      },
+      {
+        "mode": "A",
+        "attack": "dpop_replay",
+        "expected_status": null,
+        "expected_error": null,
+        "actual_status": -1,
+        "actual_error": "not_applicable",
+        "actual_message": null,
+        "passed": true,
+        "notes": "mode does not present a DPoP proof; replay cache is not consulted"
+      },
+      {
+        "mode": "B",
+        "attack": "dpop_replay",
+        "expected_status": null,
+        "expected_error": null,
+        "actual_status": -1,
+        "actual_error": "not_applicable",
+        "actual_message": null,
+        "passed": true,
+        "notes": "mode does not present a DPoP proof; replay cache is not consulted"
+      }
+    ],
+    "S3": [
+      {
+        "mode": "A",
+        "attack": "wrong_audience",
+        "expected_status": 403,
+        "expected_error": "invalid_audience",
+        "actual_status": 403,
+        "actual_error": "invalid_audience",
+        "actual_message": "Missing audience claim",
+        "passed": true,
+        "notes": "token issued by wrong-audience-client (no audience mapper)"
+      },
+      {
+        "mode": "B",
+        "attack": "wrong_audience",
+        "expected_status": 403,
+        "expected_error": "invalid_audience",
+        "actual_status": 403,
+        "actual_error": "invalid_audience",
+        "actual_message": "Missing audience claim",
+        "passed": true,
+        "notes": "audience check is mode-independent; replicating Mode A result"
+      },
+      {
+        "mode": "C",
+        "attack": "wrong_audience",
+        "expected_status": 403,
+        "expected_error": "invalid_audience",
+        "actual_status": 403,
+        "actual_error": "invalid_audience",
+        "actual_message": "Missing audience claim",
+        "passed": true,
+        "notes": "audience check is mode-independent; replicating Mode A result"
+      }
+    ],
+    "S4": [
+      {
+        "mode": "A",
+        "attack": "missing_actor_chain",
+        "expected_actor_present": false,
+        "actual_actor_present": false,
+        "actual_actor": null,
+        "actual_status": 200,
+        "passed": true,
+        "notes": "depth=2; act claim propagation via RFC 8693 token exchange"
+      },
+      {
+        "mode": "B",
+        "attack": "missing_actor_chain",
+        "expected_actor_present": true,
+        "actual_actor_present": false,
+        "actual_actor": null,
+        "actual_status": 200,
+        "passed": false,
+        "notes": "depth=2; act claim propagation via RFC 8693 token exchange"
+      },
+      {
+        "mode": "C",
+        "attack": "missing_actor_chain",
+        "expected_actor_present": true,
+        "actual_actor_present": false,
+        "actual_actor": null,
+        "actual_status": 200,
+        "passed": false,
+        "notes": "depth=2; act claim propagation via RFC 8693 token exchange"
+      },
+      {
+        "mode": "B",
+        "attack": "actor_token_valid",
+        "expected_status": 400,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": "act_claim_present=False",
+        "passed": false,
+        "notes": "actor_token accepted without validation; no act claim emitted, so delegation provenance is silently unrecorded"
+      },
+      {
+        "mode": "B",
+        "attack": "actor_token_garbage",
+        "expected_status": 400,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": "act_claim_present=False",
+        "passed": false,
+        "notes": "actor_token accepted without validation; no act claim emitted, so delegation provenance is silently unrecorded"
+      },
+      {
+        "mode": "B",
+        "attack": "actor_token_forged_jwt",
+        "expected_status": 400,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": "act_claim_present=False",
+        "passed": false,
+        "notes": "actor_token accepted without validation; no act claim emitted, so delegation provenance is silently unrecorded"
+      }
+    ],
+    "S5": [
+      {
+        "mode": "A",
+        "attack": "expired_token",
+        "expected_status": 401,
+        "expected_error": "authentication_failed",
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": null,
+        "passed": false,
+        "notes": "slept 22s past short-ttl-client's 10s lifespan; expiry check runs before mode-specific logic"
+      },
+      {
+        "mode": "B",
+        "attack": "expired_token",
+        "expected_status": 401,
+        "expected_error": "authentication_failed",
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": null,
+        "passed": false,
+        "notes": "slept 22s past short-ttl-client's 10s lifespan; expiry check runs before mode-specific logic"
+      },
+      {
+        "mode": "C",
+        "attack": "expired_token",
+        "expected_status": 401,
+        "expected_error": "authentication_failed",
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": null,
+        "passed": false,
+        "notes": "slept 22s past short-ttl-client's 10s lifespan; expiry check runs before mode-specific logic"
+      }
+    ],
+    "S6": [
+      {
+        "mode": "B",
+        "attack": "exchange_without_client_credentials",
+        "expected_status": 401,
+        "expected_error": null,
+        "actual_status": 401,
+        "actual_error": "unauthorized_client",
+        "actual_message": "Invalid client or Invalid client credentials",
+        "passed": true,
+        "notes": "token-only thief cannot reach the exchange endpoint: client authentication is required by RFC 8693 for confidential clients"
+      },
+      {
+        "mode": "B",
+        "attack": "exchange_launders_stolen_bearer",
+        "expected_status": 200,
+        "expected_error": null,
+        "actual_status": 200,
+        "actual_error": null,
+        "actual_message": null,
+        "passed": true,
+        "notes": "attacker with client credentials exchanged a stolen bearer token and used the result at the API (vulnerability confirmed; Mode B offers no sender-constraint to strip)"
+      },
+      {
+        "mode": "C",
+        "attack": "exchange_rebinds_dpop_token",
+        "expected_status": 401,
+        "expected_error": "invalid_dpop",
+        "actual_status": 200,
+        "actual_error": null,
+        "victim_jkt": "j7ox1EqsaTrb3PKWGDoNYUWUAR6hbCa00E6esaMFCKU",
+        "attacker_jkt": "UBxQzlEwByVLc6A3TJGEAvHJ-FFzF-LHoTI_uYkCMaw",
+        "rebound_to_attacker_key": true,
+        "passed": false,
+        "notes": "attacker presented a stolen DPoP-bound token to the exchange endpoint with an unrelated keypair; cnf.jkt was re-issued for the attacker's key and the laundered token was accepted at the resource server"
+      }
+    ]
+  }
+}

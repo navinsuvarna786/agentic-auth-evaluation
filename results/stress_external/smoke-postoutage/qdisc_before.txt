@@ -1,0 +1,5 @@
+=== qdisc state before cleanup (2026-05-14T18:37:44+00:00) ===
+--- sidecar-redis ---
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+--- sidecar-keycloak ---
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock

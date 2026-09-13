@@ -1,0 +1,95 @@
+# Multi-tenant-safe deployment for authserver.example.internal.
+#
+# Differences from docker-compose-infra.yml:
+#   - All exposed ports bind to 127.0.0.1; the jumphost reaches Keycloak
+#     and Redis via SSH local-forward (ssh -L 18081:127.0.0.1:18081 ...).
+#   - Postgres has no port mapping; only Keycloak talks to it on the
+#     compose-private bridge network.
+#   - No hardcoded container_name. Compose's project-scoping (-p
+#     cns2026) names containers cns2026-<svc>-1, which
+#     cannot collide with another tenant's deployment on the same box.
+#   - High ports (18081, 18379) per the multi-tenant safety decision in
+#     STATE.md.
+#
+# Bring up:  docker compose -p cns2026 -f docker-compose-devbox.yml up -d
+# Tear down: docker compose -p cns2026 -f docker-compose-devbox.yml down -v
+#
+# All state (containers, network, volumes) is removed by the `down -v`
+# command; no host filesystem changes outside ~/cns2026/.
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      # The hostname/port Keycloak puts in the `iss` claim must match what
+      # the AgentClient sees in KEYCLOAK_URL. With the SSH local-forward
+      # from jumphost to devbox:127.0.0.1:18081, the AgentClient's
+      # KEYCLOAK_URL is http://localhost:18081 and the issuer agrees.
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: "18081"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_FEATURES: "token-exchange,admin-fine-grained-authz,dpop"
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?KEYCLOAK_ADMIN_PASSWORD must be set in .env}
+      # Substituted into realm-export.json via Keycloak's ${env.VAR} placeholder.
+      CLIENT_SECRET: ${CLIENT_SECRET:?CLIENT_SECRET must be set in .env}
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET:?INTERNAL_API_SECRET must be set in .env}
+      WRONG_AUDIENCE_CLIENT_SECRET: ${WRONG_AUDIENCE_CLIENT_SECRET:?WRONG_AUDIENCE_CLIENT_SECRET must be set in .env}
+      SHORT_TTL_CLIENT_SECRET: ${SHORT_TTL_CLIENT_SECRET:?SHORT_TTL_CLIENT_SECRET must be set in .env}
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    ports:
+      - "127.0.0.1:18081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # Keycloak 25+ serves /health on the management port (9000), not the
+      # main HTTP port. The original infra compose still pointed at 8080
+      # and so always read "unhealthy" once the new release line landed.
+      # The Connection: close header is required: without it the HTTP/1.1
+      # server keeps the socket open and `cat <&3` blocks until the 10s
+      # healthcheck timeout fires.
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "127.0.0.1:18379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

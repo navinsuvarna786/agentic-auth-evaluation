@@ -1,0 +1,119 @@
+{
+ "note": "Authorization-server capacity, 1 vs 3 Keycloak instances sharing one database on a single 8-core host. The driver exercises only the token and exchange endpoints (the verifier is excluded), so this isolates AS capacity. Peers issue distinct iss values because KC_HOSTNAME_PORT is ignored in 26.x; harmless here since mint and exchange for a request go to the same instance and no token is presented to the verifier.",
+ "host": "8 cores, 31 GB; load average 8.16 during the 3-instance run, ~557% CPU across three JVMs",
+ "one_instance": {
+  "512": {
+   "target_rps": 512,
+   "achieved_rps": 512.2,
+   "attempted": 10248,
+   "ok": 10248,
+   "errors": 0,
+   "exch_ms_median": 4.26,
+   "exch_ms_p95": 5.84,
+   "mint_ms_median": 4.14,
+   "mint_ms_p95": 5.68
+  },
+  "768": {
+   "target_rps": 768,
+   "achieved_rps": 768.1,
+   "attempted": 15372,
+   "ok": 15372,
+   "errors": 0,
+   "exch_ms_median": 4.97,
+   "exch_ms_p95": 7.24,
+   "mint_ms_median": 4.71,
+   "mint_ms_p95": 7.03
+  },
+  "1024": {
+   "target_rps": 1024,
+   "achieved_rps": 992.1,
+   "attempted": 19855,
+   "ok": 19855,
+   "errors": 0,
+   "exch_ms_median": 5.85,
+   "exch_ms_p95": 8.7,
+   "mint_ms_median": 5.51,
+   "mint_ms_p95": 8.39
+  },
+  "1280": {
+   "target_rps": 1280,
+   "achieved_rps": 1006.6,
+   "attempted": 20142,
+   "ok": 20142,
+   "errors": 0,
+   "exch_ms_median": 5.8,
+   "exch_ms_p95": 8.58,
+   "mint_ms_median": 5.45,
+   "mint_ms_p95": 8.24
+  },
+  "1536": {
+   "target_rps": 1536,
+   "achieved_rps": 998.8,
+   "attempted": 19988,
+   "ok": 19988,
+   "errors": 0,
+   "exch_ms_median": 5.83,
+   "exch_ms_p95": 8.71,
+   "mint_ms_median": 5.52,
+   "mint_ms_p95": 8.4
+  }
+ },
+ "three_instances": {
+  "512": {
+   "target_rps": 512,
+   "achieved_rps": 512.3,
+   "attempted": 10248,
+   "ok": 10248,
+   "errors": 0,
+   "exch_ms_median": 7.22,
+   "exch_ms_p95": 18.61,
+   "mint_ms_median": 6.98,
+   "mint_ms_p95": 17.63
+  },
+  "768": {
+   "target_rps": 768,
+   "achieved_rps": 766.5,
+   "attempted": 15342,
+   "ok": 15342,
+   "errors": 0,
+   "exch_ms_median": 6.26,
+   "exch_ms_p95": 10.58,
+   "mint_ms_median": 6.03,
+   "mint_ms_p95": 10.27
+  },
+  "1024": {
+   "target_rps": 1024,
+   "achieved_rps": 893.5,
+   "attempted": 17882,
+   "ok": 17882,
+   "errors": 0,
+   "exch_ms_median": 6.32,
+   "exch_ms_p95": 10.1,
+   "mint_ms_median": 6.21,
+   "mint_ms_p95": 9.88
+  },
+  "1280": {
+   "target_rps": 1280,
+   "achieved_rps": 905.5,
+   "attempted": 18119,
+   "ok": 18119,
+   "errors": 0,
+   "exch_ms_median": 6.22,
+   "exch_ms_p95": 9.7,
+   "mint_ms_median": 6.13,
+   "mint_ms_p95": 9.56
+  },
+  "1536": {
+   "target_rps": 1536,
+   "achieved_rps": 878.1,
+   "attempted": 17575,
+   "ok": 17575,
+   "errors": 0,
+   "exch_ms_median": 6.46,
+   "exch_ms_p95": 10.41,
+   "mint_ms_median": 6.28,
+   "mint_ms_p95": 10.2
+  }
+ },
+ "finding": "Single-instance capacity saturates near 1,000 exchanges/s with exchange latency rising only 4.3->5.9 ms. Three co-located instances do not raise the ceiling; they lower it to ~900/s and add latency, because the bound is host CPU rather than per-instance software capacity."
+}

@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite the paper."
+title: "Performance and Security Tradeoffs in Layered Authentication for Ephemeral Artificial Intelligence Agents"
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/navinsuvarna786/agentic-auth-evaluation"
+authors:
+  - family-names: Suvarna
+    given-names: Navin
+    orcid: "https://orcid.org/0009-0004-0161-2372"
+  - family-names: Pappu
+    given-names: Karthik
+    orcid: "https://orcid.org/0009-0000-5335-6279"
+  - family-names: Sharma
+    given-names: Saurabh
+    orcid: "https://orcid.org/0009-0001-5486-8062"
+  - family-names: Parashar
+    given-names: Ankit
+    orcid: "https://orcid.org/0009-0008-6656-450X"
+preferred-citation:
+  type: conference-paper
+  title: "Performance and Security Tradeoffs in Layered Authentication for Ephemeral Artificial Intelligence Agents"
+  authors:
+    - family-names: Suvarna
+      given-names: Navin
+    - family-names: Pappu
+      given-names: Karthik
+    - family-names: Sharma
+      given-names: Saurabh
+    - family-names: Parashar
+      given-names: Ankit
+  collection-title: "Proceedings of the 18th IEEE International Conference on Advanced Infocomm Technology (ICAIT)"
+  publisher:
+    name: IEEE
+  year: 2026
+  month: 11

@@ -1,0 +1,65 @@
+{
+ "condition": {
+  "cache": false,
+  "churn": 5,
+  "delegation_depth": 1,
+  "source": "results/final195/raw",
+  "seed": 20260506,
+  "n_resamples": 10000
+ },
+ "per_mode_bootstrap_ci": {
+  "A": {
+   "n": 3000,
+   "median_ms": 6.12,
+   "ci_lower_ms": 6.09,
+   "ci_upper_ms": 6.15,
+   "p95_ms": 11.97
+  },
+  "B": {
+   "n": 3000,
+   "median_ms": 9.54,
+   "ci_lower_ms": 9.5,
+   "ci_upper_ms": 9.6,
+   "p95_ms": 15.93
+  },
+  "C": {
+   "n": 3000,
+   "median_ms": 9.97,
+   "ci_lower_ms": 9.93,
+   "ci_upper_ms": 10.03,
+   "p95_ms": 17.33
+  }
+ },
+ "pairwise_tests": [
+  {
+   "mode_a": "A",
+   "mode_b": "B",
+   "n_a": 3000,
+   "n_b": 3000,
+   "u_statistic": 1038485.5,
+   "p_value": 0.0,
+   "cliffs_delta": -0.7692254444444444,
+   "delta_magnitude": "large"
+  },
+  {
+   "mode_a": "A",
+   "mode_b": "C",
+   "n_a": 3000,
+   "n_b": 3000,
+   "u_statistic": 899027.0,
+   "p_value": 0.0,
+   "cliffs_delta": -0.8002162222222222,
+   "delta_magnitude": "large"
+  },
+  {
+   "mode_a": "B",
+   "mode_b": "C",
+   "n_a": 3000,
+   "n_b": 3000,
+   "u_statistic": 3505362.0,
+   "p_value": 9.945607818258294e-50,
+   "cliffs_delta": -0.22103066666666665,
+   "delta_magnitude": "small"
+  }
+ ]
+}

@@ -1,0 +1,2 @@
+cns2026-keycloak-1	2.40%	5.411GiB / 31.34GiB
+cns2026-redis-1	0.50%	6.934MiB / 31.34GiB

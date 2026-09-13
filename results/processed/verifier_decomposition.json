@@ -1,0 +1,25 @@
+{
+ "per_request": {
+  "set": "single-worker Mode C stress cells (32/128/512 RPS, 2 reps each)",
+  "n": 40320,
+  "median_ms": 0.86,
+  "p95_ms": 1.81,
+  "p99_ms": 2.82
+ },
+ "per_rep_all_single_worker": {
+  "n_reps": 27,
+  "verify_med_min": 0.8,
+  "verify_med_median": 0.82,
+  "verify_med_max": 1.18,
+  "stressed_reps": {
+   "n": 4,
+   "verify_med_min": 0.8,
+   "verify_med_max": 0.81
+  },
+  "calm_reps": {
+   "n": 23,
+   "verify_med_min": 0.8,
+   "verify_med_max": 1.18
+  }
+ }
+}

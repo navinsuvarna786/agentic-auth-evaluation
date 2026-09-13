@@ -1,0 +1,19 @@
+# Transient per-run benchmark output: rewritten by every benchmark.py
+# invocation and never read back. The 195-run summary the paper cites
+# lives at results/final195/processed/benchmark_summary.csv.
+results/processed/benchmark_summary.csv
+
+# Local environment and build artifacts
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz

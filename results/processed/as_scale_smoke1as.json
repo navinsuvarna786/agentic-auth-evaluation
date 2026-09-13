@@ -1,0 +1,33 @@
+{
+ "tag": "smoke1as",
+ "as_instances": 1,
+ "as_urls": [
+  "http://localhost:18081"
+ ],
+ "workers": 8,
+ "duration_s": 12.0,
+ "by_rate": {
+  "256": {
+   "target_rps": 256,
+   "achieved_rps": 256.4,
+   "attempted": 3080,
+   "ok": 3080,
+   "errors": 0,
+   "exch_ms_median": 4.51,
+   "exch_ms_p95": 6.53,
+   "mint_ms_median": 4.61,
+   "mint_ms_p95": 6.98
+  },
+  "512": {
+   "target_rps": 512,
+   "achieved_rps": 512.1,
+   "attempted": 6152,
+   "ok": 6152,
+   "errors": 0,
+   "exch_ms_median": 4.57,
+   "exch_ms_p95": 6.28,
+   "mint_ms_median": 4.43,
+   "mint_ms_p95": 6.05
+  }
+ }
+}

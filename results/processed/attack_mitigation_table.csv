@@ -1,0 +1,6 @@
+Attack Scenario,Mode A (Bearer),Mode B (Exchange),Mode C (Exchange+DPoP)
+S1: Stolen bearer token replay,Succeeds,Succeeds,"Fails (DPoP key mismatch, 401)"
+S2: DPoP proof replay (same jti),N/A,N/A,"Fails (replay cache, 403)"
+S3: Wrong audience token,"Fails (audience, 403)","Fails (audience, 403)","Fails (audience, 403)"
+S4: Missing actor chain (D2),Actor chain absent,Actor chain absent,Actor chain absent
+S5: Expired token reuse,Succeeds,Succeeds,Succeeds

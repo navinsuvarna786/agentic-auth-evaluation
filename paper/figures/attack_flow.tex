@@ -1,0 +1,99 @@
+% Attack Flow Visualization for S1 (Token Theft)
+\begin{tikzpicture}[scale=0.58, every node/.style={scale=0.58}, font=\tiny]
+
+\definecolor{legitimateblue}{RGB}{33,150,243}
+\definecolor{attackerred}{RGB}{220,53,69}
+\definecolor{successgreen}{RGB}{76,175,80}
+\definecolor{blockred}{RGB}{211,47,47}
+
+\tikzset{
+    entity/.style={rectangle, rounded corners, minimum width=1.6cm, minimum height=0.6cm,
+                   text centered, draw=black, thick, font=\tiny\bfseries},
+    step/.style={rectangle, minimum width=2.2cm, minimum height=0.5cm,
+                 text centered, draw=black, fill=white, font=\tiny},
+    flow/.style={->, >=stealth, thick},
+    stolen/.style={->, >=stealth, very thick, draw=attackerred, dashed},
+    success/.style={rectangle, draw=successgreen, very thick, fill=successgreen!20, 
+                    minimum width=1.5cm, minimum height=0.4cm, font=\tiny\bfseries},
+    blocked/.style={rectangle, draw=blockred, very thick, fill=blockred!20,
+                    minimum width=1.5cm, minimum height=0.4cm, font=\tiny\bfseries},
+}
+
+% Title
+\node[font=\small\bfseries] at (0,6.5) {S1: Token Theft Attack Flow};
+
+% ===== Mode A/B: Vulnerable =====
+\begin{scope}[shift={(-5.5,0)}]
+    \node[font=\tiny\bfseries] at (0,5.5) {Mode A/B (Bearer)};
+    
+    % Entities
+    \node[entity, fill=legitimateblue!20] (agent) at (-1.5,4.5) {Agent};
+    \node[entity, fill=gray!20] (api) at (1.5,4.5) {API};
+    \node[entity, fill=attackerred!20] (attacker) at (0,0.5) {Attacker};
+    
+    % Legitimate flow
+    \node[step] (s1) at (-1.5,3.5) {1. Get token};
+    \draw[flow] (agent) -- (s1);
+    
+    \node[step] (s2) at (0,2.5) {2. Request + token};
+    \draw[flow] (s1) -- (s2);
+    \draw[flow] (s2) -- (api);
+    
+    % Token stolen
+    \node[step, fill=attackerred!10] (s3) at (0,1.5) {3. Token stolen\\(network/log)};
+    \draw[stolen] (s2) -- (s3);
+    \draw[stolen] (s3) -- (attacker);
+    
+    % Attacker reuses
+    \node[step, fill=attackerred!10] (s4) at (1.5,0.5) {4. Replay\\stolen token};
+    \draw[stolen] (attacker) -- (s4);
+    \draw[stolen] (s4) -- (api);
+    
+    % Outcome
+    \node[success] at (1.5,-0.5) {✓ Succeeds};
+\end{scope}
+
+% ===== Mode C: Protected =====
+\begin{scope}[shift={(5.5,0)}]
+    \node[font=\tiny\bfseries] at (0,5.5) {Mode C (DPoP)};
+    
+    % Entities
+    \node[entity, fill=legitimateblue!20] (agent_c) at (-1.5,4.5) {Agent\\(+key)};
+    \node[entity, fill=gray!20] (api_c) at (1.5,4.5) {API};
+    \node[entity, fill=attackerred!20] (attacker_c) at (0,0.5) {Attacker};
+    
+    % Legitimate flow
+    \node[step] (s1c) at (-1.5,3.5) {1. Gen key\\+ Get token};
+    \draw[flow] (agent_c) -- (s1c);
+    
+    \node[step] (s2c) at (0,2.5) {2. Request\\+ token + proof};
+    \draw[flow] (s1c) -- (s2c);
+    \draw[flow] (s2c) -- (api_c);
+    
+    % Token stolen (but not key)
+    \node[step, fill=attackerred!10] (s3c) at (0,1.5) {3. Token stolen\\(NO private key)};
+    \draw[stolen] (s2c) -- (s3c);
+    \draw[stolen] (s3c) -- (attacker_c);
+    
+    % Attacker tries to reuse
+    \node[step, fill=attackerred!10] (s4c) at (1.5,0.5) {4. Replay token\\(invalid proof)};
+    \draw[stolen] (attacker_c) -- (s4c);
+    \draw[stolen] (s4c) -- (api_c);
+    
+    % Outcome
+    \node[blocked] at (1.5,-0.5) {✗ Blocked};
+    
+    % Explanation
+    \node[rectangle, draw=blockred, thick, fill=blockred!5, text width=2.5cm, 
+          font=\tiny, align=center] at (0,-1.5) {
+        API verifies:\\proof signature\\≠ token cnf
+    };
+\end{scope}
+
+% Key insight
+\node[rectangle, draw=black, thick, fill=yellow!10, text width=10cm, 
+      font=\tiny, align=center] at (0,-3) {
+    \textbf{Key Insight:} DPoP binds token to ephemeral private key. Stolen token is useless without the key.
+};
+
+\end{tikzpicture}

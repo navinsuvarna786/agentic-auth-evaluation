@@ -1,0 +1,68 @@
+{
+ "tag": "3as",
+ "as_instances": 3,
+ "as_urls": [
+  "http://localhost:18081",
+  "http://localhost:18082",
+  "http://localhost:18083"
+ ],
+ "workers": 12,
+ "duration_s": 20.0,
+ "by_rate": {
+  "512": {
+   "target_rps": 512,
+   "achieved_rps": 512.3,
+   "attempted": 10248,
+   "ok": 10248,
+   "errors": 0,
+   "exch_ms_median": 7.22,
+   "exch_ms_p95": 18.61,
+   "mint_ms_median": 6.98,
+   "mint_ms_p95": 17.63
+  },
+  "768": {
+   "target_rps": 768,
+   "achieved_rps": 766.5,
+   "attempted": 15342,
+   "ok": 15342,
+   "errors": 0,
+   "exch_ms_median": 6.26,
+   "exch_ms_p95": 10.58,
+   "mint_ms_median": 6.03,
+   "mint_ms_p95": 10.27
+  },
+  "1024": {
+   "target_rps": 1024,
+   "achieved_rps": 893.5,
+   "attempted": 17882,
+   "ok": 17882,
+   "errors": 0,
+   "exch_ms_median": 6.32,
+   "exch_ms_p95": 10.1,
+   "mint_ms_median": 6.21,
+   "mint_ms_p95": 9.88
+  },
+  "1280": {
+   "target_rps": 1280,
+   "achieved_rps": 905.5,
+   "attempted": 18119,
+   "ok": 18119,
+   "errors": 0,
+   "exch_ms_median": 6.22,
+   "exch_ms_p95": 9.7,
+   "mint_ms_median": 6.13,
+   "mint_ms_p95": 9.56
+  },
+  "1536": {
+   "target_rps": 1536,
+   "achieved_rps": 878.1,
+   "attempted": 17575,
+   "ok": 17575,
+   "errors": 0,
+   "exch_ms_median": 6.46,
+   "exch_ms_p95": 10.41,
+   "mint_ms_median": 6.28,
+   "mint_ms_p95": 10.2
+  }
+ }
+}

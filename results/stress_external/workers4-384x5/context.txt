@@ -1,0 +1,5 @@
+host=authserver  user=user  date=2026-05-14T23:51:03+00:00
+API_URL=http://localhost:18000  KEYCLOAK_URL=http://localhost:18081  REDIS_URL=redis://localhost:18379
+load:  23:51:03 up 107 days,  8:49,  4 users,  load average: 0.15, 0.15, 0.31
+free: Mem:           32095        7540         407          22       24633       24555
+git: no-git

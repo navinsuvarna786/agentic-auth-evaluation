@@ -1,0 +1,4 @@
+mode,n_requests,latency_median_ms,latency_p95_ms,latency_mean_ms,latency_std_ms,failure_rate_pct
+A,6240,6.06,11.57,5.48,4.01,0.0
+B,6240,10.42,18.5,8.84,9.15,0.0
+C,6240,12.37,56.33,15.55,15.67,0.0

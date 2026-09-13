@@ -1,0 +1,5 @@
+host=anon-client-host  user=anon-user  date=2026-05-14T18:38:43+00:00
+API_URL=http://localhost:8001  KEYCLOAK_URL=http://localhost:18081  REDIS_URL=redis://localhost:18379
+load:  18:38:43 up 23 min,  3 users,  load average: 0.61, 0.97, 0.81
+free: Mem:           24031       13163        4935         226        6556       10867
+git: d29237b

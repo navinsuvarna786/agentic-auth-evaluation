@@ -1,0 +1,63 @@
+% Security Threat Model Diagram
+\begin{tikzpicture}[scale=0.65, every node/.style={scale=0.65}, font=\tiny]
+
+\definecolor{threatred}{RGB}{220,53,69}
+\definecolor{assetblue}{RGB}{33,150,243}
+\definecolor{attackorange}{RGB}{255,152,0}
+
+\tikzset{
+    asset/.style={rectangle, rounded corners, minimum width=2cm, minimum height=0.8cm, 
+                  text centered, draw=black, thick, fill=assetblue!20, font=\tiny\bfseries},
+    threat/.style={rectangle, minimum width=2.5cm, minimum height=0.7cm, 
+                   text centered, draw=threatred, very thick, fill=threatred!10, font=\tiny},
+    attacker/.style={ellipse, minimum width=1.5cm, minimum height=0.8cm,
+                     text centered, draw=attackorange, very thick, fill=attackorange!20, font=\tiny\bfseries},
+    attack/.style={->, >=stealth, thick, draw=threatred, dashed},
+    protect/.style={->, >=stealth, thick, draw=green!60!black},
+}
+
+% Title
+\node[font=\small\bfseries] at (0,5.5) {Security Threat Model};
+
+% Assets (what we're protecting)
+\node[asset] (token) at (-3,4) {Bearer\\Token};
+\node[asset] (api) at (0,4) {Protected\\API};
+\node[asset] (audit) at (3,4) {Audit\\Trail};
+
+% Threats
+\node[threat] (t1) at (-3,2.2) {T1: Token Theft\\Network/Log/Memory};
+\node[threat] (t2) at (-1,1) {T2: Replay\\Attack};
+\node[threat] (t3) at (1,2.2) {T3: Audience\\Misuse};
+\node[threat] (t4) at (3,1) {T4: Lost\\Delegation};
+
+% Attacker
+\node[attacker] (attacker) at (0,-0.5) {Attacker};
+
+% Attack paths
+\draw[attack] (t1) -- (token);
+\draw[attack] (t2) -- (api);
+\draw[attack] (t3) -- (api);
+\draw[attack] (t4) -- (audit);
+
+\draw[attack] (attacker) -- (t1);
+\draw[attack] (attacker) -- (t2);
+\draw[attack] (attacker) -- (t3);
+\draw[attack] (attacker) -- (t4);
+
+% Protection mechanisms
+\node[rectangle, draw=green!60!black, thick, fill=green!5, text width=3cm, font=\tiny, align=left] 
+     at (-3,-2.3) {
+    \textbf{Mode A:} No protection\\
+    \textbf{Mode B:} T3, T4 partial\\
+    \textbf{Mode C:} T1, T2, T3, T4
+};
+
+% Scope annotation
+\node[rectangle, draw=gray, dashed, thick, fill=yellow!5, text width=5.5cm, font=\tiny, align=center] 
+     at (0,-3.5) {
+    \textbf{In Scope:} Single trust domain, token-level security\\
+    \textbf{Out of Scope:} Prompt injection, model alignment,\\
+    compromised IdP, side-channels, cross-domain
+};
+
+\end{tikzpicture}

@@ -1,0 +1,5 @@
+=== qdisc state after cleanup (2026-05-15T00:06:26+00:00) ===
+--- sidecar-redis ---
+qdisc noqueue 0: root refcnt 2 
+--- sidecar-keycloak ---
+qdisc noqueue 0: root refcnt 2 

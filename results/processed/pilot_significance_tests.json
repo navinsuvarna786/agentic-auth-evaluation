@@ -1,0 +1,69 @@
+{
+  "condition": {
+    "cache": false,
+    "churn": 5,
+    "delegation_depth": 1
+  },
+  "per_mode_bootstrap_ci": {
+    "A": {
+      "n": 300,
+      "median_ms": 9.605,
+      "ci_lower_ms": 9.45,
+      "ci_upper_ms": 9.865,
+      "ci_confidence": 0.95,
+      "ci_method": "percentile bootstrap",
+      "n_resamples": 10000
+    },
+    "B": {
+      "n": 300,
+      "median_ms": 12.925,
+      "ci_lower_ms": 12.76,
+      "ci_upper_ms": 13.36,
+      "ci_confidence": 0.95,
+      "ci_method": "percentile bootstrap",
+      "n_resamples": 10000
+    },
+    "C": {
+      "n": 300,
+      "median_ms": 16.314999999999998,
+      "ci_lower_ms": 16.01,
+      "ci_upper_ms": 16.884999999999998,
+      "ci_confidence": 0.95,
+      "ci_method": "percentile bootstrap",
+      "n_resamples": 10000
+    }
+  },
+  "pairwise_tests": [
+    {
+      "mode_a": "A",
+      "mode_b": "B",
+      "n_a": 300,
+      "n_b": 300,
+      "u_statistic": 8256.0,
+      "p_value": 4.187473576272445e-67,
+      "cliffs_delta": -0.8165333333333333,
+      "delta_magnitude": "large"
+    },
+    {
+      "mode_a": "A",
+      "mode_b": "C",
+      "n_a": 300,
+      "n_b": 300,
+      "u_statistic": 2211.5,
+      "p_value": 2.4959146370906167e-90,
+      "cliffs_delta": -0.9508555555555556,
+      "delta_magnitude": "large"
+    },
+    {
+      "mode_a": "B",
+      "mode_b": "C",
+      "n_a": 300,
+      "n_b": 300,
+      "u_statistic": 14868.0,
+      "p_value": 1.021749494048555e-45,
+      "cliffs_delta": -0.6696,
+      "delta_magnitude": "large"
+    }
+  ],
+  "notes": "Mann-Whitney U is two-sided; Cliff's delta thresholds per Romano et al. (2006). Bootstrap is percentile method, 10000 resamples, seed 20260506."
+}

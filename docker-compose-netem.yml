@@ -1,0 +1,86 @@
+# Netem RTT injection overlay for the cns2026 stack.
+#
+# Compose this on top of docker-compose-devbox.yml to add a sidecar
+# container that shares the Keycloak container's network namespace and
+# applies a `tc qdisc ... netem delay` rule to its eth0. The rule
+# lives inside Keycloak's network namespace and disappears when this
+# sidecar is removed — no host-level changes, no other tenants
+# affected.
+#
+# Usage:
+#   NETEM_DELAY_MS=10 docker compose -p cns2026 \
+#     -f docker-compose-devbox.yml -f docker-compose-netem.yml \
+#     --env-file .env up -d
+#
+# Sweep:
+#   for d in 0 1 10 50; do
+#     NETEM_DELAY_MS=$d docker compose ... up -d --force-recreate keycloak-netem
+#     sleep 3  # let netem stabilise
+#     <run benchmark; tag CSVs with d>
+#   done
+#
+# Teardown of the netem rule alone (keep keycloak running):
+#   docker compose -p cns2026 -f docker-compose-netem.yml down
+#
+# Why nicolaka/netshoot: it already includes iproute2 (tc), so we
+# avoid an `apk add` step that would slow recreation and need
+# network access at boot.
+#
+# IMPORTANT: every $ in the inline command script is doubled. Docker
+# Compose interpolates ${VAR} references in YAML at compose-time, so
+# unescaped $${VAR} would be substituted to the empty string before
+# the container ever starts. $$VAR becomes $VAR after compose's
+# substitution pass, leaving the container's shell to read the env.
+
+services:
+  keycloak-netem:
+    image: nicolaka/netshoot:v0.13
+    network_mode: "service:keycloak"
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      NETEM_DELAY_MS: ${NETEM_DELAY_MS:-0}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        DELAY="$${NETEM_DELAY_MS:-0}"
+        if [ "$$DELAY" -gt 0 ]; then
+          tc qdisc replace dev eth0 root netem delay "$${DELAY}ms"
+          echo "applied netem delay=$${DELAY}ms to keycloak eth0"
+          tc qdisc show dev eth0
+        else
+          tc qdisc del dev eth0 root 2>/dev/null || true
+          echo "no netem (DELAY=0); cleared any existing qdisc"
+        fi
+        tail -f /dev/null
+    restart: "no"
+
+  redis-netem:
+    image: nicolaka/netshoot:v0.13
+    network_mode: "service:redis"
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      NETEM_DELAY_MS: ${NETEM_DELAY_MS:-0}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        DELAY="$${NETEM_DELAY_MS:-0}"
+        if [ "$$DELAY" -gt 0 ]; then
+          tc qdisc replace dev eth0 root netem delay "$${DELAY}ms"
+          echo "applied netem delay=$${DELAY}ms to redis eth0"
+          tc qdisc show dev eth0
+        else
+          tc qdisc del dev eth0 root 2>/dev/null || true
+          echo "no netem (DELAY=0); cleared any existing qdisc"
+        fi
+        tail -f /dev/null
+    restart: "no"

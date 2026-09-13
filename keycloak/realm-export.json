@@ -1,0 +1,132 @@
+{
+  "realm": "ephemeral-agents",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "clients": [
+    {
+      "clientId": "agent-launcher",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${env.CLIENT_SECRET}",
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": false,
+      "fullScopeAllowed": true,
+      "defaultClientScopes": ["agent-scope", "openid", "profile", "email"],
+      "attributes": {
+        "oauth2.token.exchange.grant.enabled": "true",
+        "standard.token.exchange.enabled": "true",
+        "dpop.bound.access.tokens": "false"
+      }
+    },
+    {
+      "clientId": "internal-api",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${env.INTERNAL_API_SECRET}",
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": true,
+      "attributes": {}
+    },
+    {
+      "clientId": "wrong-audience-client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${env.WRONG_AUDIENCE_CLIENT_SECRET}",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": false,
+      "defaultClientScopes": ["openid", "profile", "email"],
+      "optionalClientScopes": [],
+      "attributes": {}
+    },
+    {
+      "clientId": "short-ttl-client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${env.SHORT_TTL_CLIENT_SECRET}",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": true,
+      "defaultClientScopes": ["agent-scope", "openid", "profile", "email"],
+      "attributes": {
+        "access.token.lifespan": "10"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "service-agent",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "agent-password",
+          "temporary": false
+        }
+      ],
+      "clientRoles": {
+        "realm-management": ["view-users", "view-clients"]
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "agent-role",
+        "description": "Role for ephemeral agents"
+      },
+      {
+        "name": "api-access",
+        "description": "Role for API access"
+      }
+    ]
+  },
+  "clientScopes": [
+    {
+      "name": "agent-scope",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "internal-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

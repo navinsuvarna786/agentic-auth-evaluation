@@ -1,0 +1,47 @@
+% Compact sequence diagram for Mode C (single column)
+\begin{tikzpicture}[scale=0.5, every node/.style={scale=0.5}, font=\tiny]
+
+\definecolor{agentcolor}{RGB}{76,175,80}
+\definecolor{keycloakcolor}{RGB}{0,120,180}
+\definecolor{apicolor}{RGB}{33,150,243}
+
+\tikzset{
+    component/.style={rectangle, rounded corners, minimum width=1.8cm, minimum height=0.6cm, 
+                     text centered, draw=black, thick, font=\tiny\bfseries},
+    flow/.style={-{Stealth[length=2mm]}, thick},
+    flowlabel/.style={font=\tiny, fill=white, inner sep=1pt},
+}
+
+% Components
+\node[component, fill=agentcolor!30] (agent) at (0,0) {Agent};
+\node[component, fill=keycloakcolor!30] (keycloak) at (3.5,0) {Keycloak};
+\node[component, fill=apicolor!30] (api) at (7,0) {API};
+
+% Lifelines
+\draw[thick, dashed] (agent) -- (0,-8);
+\draw[thick, dashed] (keycloak) -- (3.5,-8);
+\draw[thick, dashed] (api) -- (7,-8);
+
+% Step 1: Generate key
+\node[rectangle, fill=agentcolor!10, draw=agentcolor, text width=1.8cm, 
+      font=\tiny, align=center] at (0,-1) {1. Gen\\P-256 key};
+
+% Step 2: Get subject token
+\draw[flow] (0,-1.7) -- node[flowlabel, above, font=\tiny] {2. Get token} (3.5,-1.7);
+\draw[flow] (3.5,-2.2) -- node[flowlabel, above, font=\tiny] {3. subject\_token} (0,-2.2);
+
+% Step 4: Exchange with DPoP
+\draw[flow] (0,-3) -- node[flowlabel, above, font=\tiny] {4. Exchange+DPoP} (3.5,-3);
+\node[rectangle, fill=keycloakcolor!10, draw=keycloakcolor, text width=1.6cm, 
+      font=\tiny, align=left] at (3.5,-3.8) {5. Verify\\proof};
+\draw[flow] (3.5,-4.5) -- node[flowlabel, above, font=\tiny] {6. DPoP token} (0,-4.5);
+
+% Step 7: API request
+\node[rectangle, fill=agentcolor!10, draw=agentcolor, text width=1.6cm, 
+      font=\tiny, align=center] at (0,-5.3) {7. Create\\request proof};
+\draw[flow] (0,-6) -- node[flowlabel, above, font=\tiny] {8. POST+proof} (7,-6);
+\node[rectangle, fill=apicolor!10, draw=apicolor, text width=1.6cm, 
+      font=\tiny, align=left] at (7,-6.8) {9. Verify\\token+proof};
+\draw[flow] (7,-7.5) -- node[flowlabel, above, font=\tiny] {10. Response} (0,-7.5);
+
+\end{tikzpicture}

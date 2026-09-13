@@ -1,0 +1,21 @@
+{
+ "note": "Per-stage verifier decomposition. Collected on the cross-host configuration (replay cache reached over the host link), so absolute values exceed the loopback stress runs; the per-stage SHARES are the quantity of interest.",
+ "n": 4000,
+ "verification_ms": {
+  "median": 1.911,
+  "p95": 2.332,
+  "p99": 2.709
+ },
+ "stage_share_of_median_pct": {
+  "jwks_ms": 5.6,
+  "bearer_decode_ms": 6.3,
+  "dpop_sig_ms": 9.8,
+  "redis_ms": 69.7
+ },
+ "stage_share_at_or_above_p95_pct": {
+  "jwks_ms": 9.1,
+  "bearer_decode_ms": 4.4,
+  "dpop_sig_ms": 7.1,
+  "redis_ms": 74.5
+ }
+}

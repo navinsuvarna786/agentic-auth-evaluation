@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "timestamp": 1789338734.450274,
+    "iso": "2026-09-13T22:32:14Z",
+    "keycloak_version": "26.6.4",
+    "keycloak_url": "http://localhost:18091",
+    "realm": "s6probe",
+    "features": [
+      "dpop"
+    ],
+    "mode": "standalone throwaway instance (docker run, start-dev)"
+  },
+  "rows": [
+    {
+      "scenario": "base",
+      "attack": "plain_exchange",
+      "status": 200,
+      "error": null,
+      "error_description": null,
+      "aud": "probe-api"
+    },
+    {
+      "scenario": "S6a",
+      "attack": "stolen_token_no_client_creds",
+      "status": 401,
+      "error": "invalid_client",
+      "error_description": "Invalid client or Invalid client credentials"
+    },
+    {
+      "scenario": "S6b",
+      "attack": "launder_bearer_subject",
+      "status": 200,
+      "error": null,
+      "error_description": null
+    },
+    {
+      "scenario": "S6c",
+      "attack": "rebind_dpop_subject_attacker_key",
+      "status": 400,
+      "error": "invalid_request",
+      "error_description": "Sender-constrained tokens are not supported as subject_token. Use a Bearer token instead.",
+      "rebound": false
+    },
+    {
+      "scenario": "S6c",
+      "attack": "control_dpop_subject_victim_key",
+      "status": 400,
+      "error": "invalid_request",
+      "error_description": "Sender-constrained tokens are not supported as subject_token. Use a Bearer token instead.",
+      "jkt_preserved": false
+    },
+    {
+      "scenario": "S6",
+      "attack": "modeC_bearer_subject_plus_dpop",
+      "status": 200,
+      "error": null,
+      "error_description": null,
+      "result_sender_constrained": true
+    },
+    {
+      "scenario": "S4",
+      "attack": "actor_token_valid",
+      "status": 200,
+      "error": null,
+      "error_description": null,
+      "act_claim_present": false,
+      "act_claim": null
+    },
+    {
+      "scenario": "S4",
+      "attack": "actor_token_garbage",
+      "status": 200,
+      "error": null,
+      "error_description": null,
+      "act_claim_present": false,
+      "act_claim": null
+    },
+    {
+      "scenario": "S4",
+      "attack": "actor_token_forged_jwt",
+      "status": 200,
+      "error": null,
+      "error_description": null,
+      "act_claim_present": false,
+      "act_claim": null
+    },
+    {
+      "scenario": "S4",
+      "attack": "depth2_chain_actor_is_previous",
+      "status": 200,
+      "error": null,
+      "error_description": null,
+      "act_claim_present": false,
+      "act_claim": null
+    }
+  ]
+}

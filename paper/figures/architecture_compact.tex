@@ -1,0 +1,54 @@
+% Compact architecture diagram for single column
+\begin{tikzpicture}[scale=0.55, every node/.style={scale=0.55}, font=\scriptsize]
+
+% Define colors
+\definecolor{keycloakblue}{RGB}{0,120,180}
+\definecolor{agentgreen}{RGB}{76,175,80}
+\definecolor{apiblue}{RGB}{33,150,243}
+\definecolor{redisred}{RGB}{220,53,69}
+
+% Define styles
+\tikzstyle{component} = [rectangle, rounded corners, minimum width=2cm, minimum height=0.7cm, text centered, draw=black, fill=blue!10, font=\scriptsize\bfseries]
+\tikzstyle{agent} = [rectangle, rounded corners, minimum width=1.5cm, minimum height=0.6cm, text centered, draw=black, fill=agentgreen!30, font=\tiny]
+\tikzstyle{service} = [rectangle, rounded corners, minimum width=2cm, minimum height=0.7cm, text centered, draw=black, fill=apiblue!20, font=\scriptsize\bfseries]
+\tikzstyle{storage} = [cylinder, shape border rotate=90, aspect=0.25, minimum height=0.7cm, minimum width=1.5cm, draw=black, fill=redisred!20, font=\tiny]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% Mode A
+\begin{scope}[shift={(-5.5,0)}]
+    \node[font=\scriptsize\bfseries] at (0,3.5) {Mode A};
+    \node[component, fill=keycloakblue!20] (kc_a) at (0,2.5) {Keycloak};
+    \node[agent] (ag_a) at (-1.2,1) {Agent};
+    \node[service] (api_a) at (1.2,1) {API};
+    \draw[arrow] (kc_a) -- (ag_a);
+    \draw[arrow] (ag_a) -- (api_a);
+    \node[font=\tiny, text width=3cm, align=center] at (0,-0.3) {Bearer only\\No exchange};
+\end{scope}
+
+% Mode B
+\begin{scope}[shift={(0,0)}]
+    \node[font=\scriptsize\bfseries] at (0,3.5) {Mode B};
+    \node[component, fill=keycloakblue!20] (kc_b) at (0,2.5) {Keycloak};
+    \node[agent] (ag_b) at (-1.2,1) {Agent};
+    \node[service] (api_b) at (1.2,1) {API};
+    \node[storage] (cache_b) at (0,-0.5) {Redis};
+    \draw[arrow] (kc_b) -- (ag_b);
+    \draw[arrow] (ag_b) -- (api_b);
+    \draw[arrow, dashed] (api_b) -- (cache_b);
+    \node[font=\tiny, text width=3cm, align=center] at (0,-1.3) {Token exchange\\(RFC 8693)};
+\end{scope}
+
+% Mode C
+\begin{scope}[shift={(5.5,0)}]
+    \node[font=\scriptsize\bfseries] at (0,3.5) {Mode C};
+    \node[component, fill=keycloakblue!20] (kc_c) at (0,2.5) {Keycloak};
+    \node[agent] (ag_c) at (-1.2,1) {Agent\\(key)};
+    \node[service] (api_c) at (1.2,1) {API};
+    \node[storage] (cache_c) at (0,-0.5) {Redis};
+    \draw[arrow] (kc_c) -- (ag_c);
+    \draw[arrow] (ag_c) -- (api_c);
+    \draw[arrow, dashed] (api_c) -- (cache_c);
+    \node[font=\tiny, text width=3cm, align=center] at (0,-1.3) {Exchange + DPoP\\(RFC 9449)};
+\end{scope}
+
+\end{tikzpicture}

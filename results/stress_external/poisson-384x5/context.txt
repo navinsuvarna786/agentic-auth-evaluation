@@ -1,0 +1,5 @@
+host=anon-authsrv-host  user=anon-user  date=2026-05-14T21:36:58+00:00
+API_URL=http://localhost:18000  KEYCLOAK_URL=http://localhost:18081  REDIS_URL=redis://localhost:18379
+load:  21:36:58 up 107 days,  6:35,  3 users,  load average: 0.06, 0.09, 0.13
+free: Mem:           32095        7439         597          22       24602       24656
+git: no-git

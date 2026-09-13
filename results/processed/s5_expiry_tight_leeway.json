@@ -1,0 +1,9 @@
+{
+ "leeway_s": 30,
+ "skew_s": 23,
+ "token_lifespan_s": 10,
+ "sleep_s": 70,
+ "status": 401,
+ "error": "authentication_failed",
+ "message": "Token has expired"
+}
